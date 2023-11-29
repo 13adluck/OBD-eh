@@ -22,7 +22,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "liquidcrystal_i2c.h"
-#include "SoftSerialSTM32.h"
 
 /* USER CODE END Includes */
 
@@ -78,86 +77,23 @@ typedef enum
 	down_option
 } obdOptions;
 
-obdOptions finiteState(void)
-{
-	HAL_GPIO_WritePin(GPIOB, button_1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, button_2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(GPIOB, button_3_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(GPIOB, button_4_Pin, GPIO_PIN_RESET);
-	if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3))
-	{
+//obdOptions finiteState(void)
+//{
+	//HAL_GPIO_WritePin(GPIOB, button_1_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(GPIOB, button_2_Pin, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(GPIOB, button_3_Pin, GPIO_PIN_SET);
+	//HAL_GPIO_WritePin(GPIOB, button_4_Pin, GPIO_PIN_RESET);
+	//if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_3))
+	//{
 		//HAL_Delay(10*1000);
-		return Transition_EW_State;
-	}
-	else
-	{
-		return NS_Stop_EW_Pass_State;
-	}
-return finiteState;
-}
-void setup(){
-	HD44780.begin(9600);
-  Serial.begin(9600);
+		//return Transition_EW_State;
+	//}
+	//else
+	//{
+		//return NS_Stop_EW_Pass_State;
+//}
+//return finiteState;
 
-  HD44780.write(254);
-  HD44780.write(1);
-
-  HD44780.print("Speed: ");
-  HD44780.write(254);
-  HD44780.write(128+64);
-  HD44780.print("RPM: ");
-
-  delay(1500);
-  Serial.println("ATZ");
-  delay(2000);
-
-  Serial.flush();
-}
-
-void loop(){
-  Serial.flush();
-
-  HD44780.write(254);
-  HD44780.write(128+8);
-  HD44780.print("        ");
-  HD44780.write(254);
-  HD44780.write(128+8);
-
-  Serial.println("010D");
-  getResponse();
-  getResponse();
-  vehicleSpeed = strtol(&rxData[6],0,16);
-  HD44780.print(vehicleSpeed);
-  HD44780.print(" km/h");
-  delay(100);
-
-  Serial.flush();
-
-  HD44780.write(254);
-  HD44780.write(128 + 69);
-  HD44780.print("          ");
-  HD44780.write(254);
-  HD44780.write(128+69);
-
-  Serial.println("010C");
-  getResponse();
-  getResponse();
-  vehicleRPM = ((strtol(&rxData[6],0,16)*256)+strtol(&rxData[9],0,16))/4;
-  HD44780.print(vehicleRPM);
-
-  delay(100);
-}
-
-void getResponse(){
-  rxIndex = 0;
-  memset(rxData, 0, sizeof(rxData));
-
-  while(Serial.available() && rxIndex < sizeof(rxData) - 1){
-    rxData[rxIndex] = Serial.read();
-    rxIndex++;
-  }
-  rxData[rxIndex] = '\0';
-}
 /* USER CODE END 0 */
 
 /**
@@ -195,15 +131,6 @@ int main(void)
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   HD44780_Init(2);
-  HD44780_SetCursor(0,0);
-  SoftwareSerial HD44780();
-  char rxData[20];
-  char rxIndex=0;
-  int vehicleSpeed=0;
-  int vehicleRPM=0;
-  setup();
-  loop();
-  getResponse();
   //SoftwareSerial(HD44780(3,4));
   //switch(eNextState)
   	  //{
@@ -239,7 +166,7 @@ int main(void)
     HD44780_PrintStr("Version 1.0");
     HD44780_SetCursor(20,24);
     HD44780_PrintStr("Press Button 1");
-    HAL_Delay(wait);
+    HAL_Delay(100000);
 
     HD44780_Clear();
     HD44780_SetCursor(0,0);
